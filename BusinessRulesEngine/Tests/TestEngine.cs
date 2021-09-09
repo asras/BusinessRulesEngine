@@ -11,38 +11,6 @@ namespace Tests
     [TestClass]
     public class TestEngine
     {
-        Dictionary<ProductType, IEnumerable<IAction>> AllActions = new Dictionary<ProductType, IEnumerable<IAction>>()
-        {
-            {ProductType.PhysicalProduct, new IAction[]
-                {
-                    new GeneratePackingSlip("Generate packing slip for shipping."),
-                    new GenerateCommission()
-                }
-            },
-            {ProductType.Book, new IAction[]
-                {
-                    new GeneratePackingSlip("Generate duplicate packing slip for royalty department."),
-                    new GenerateCommission()
-                }
-            },
-            {ProductType.Membership, new IAction[]
-                {
-                    new ModifyMembership("Activate new membership."),
-                    new EmailOwner("membership activation")
-                }
-            },
-            {ProductType.MembershipUpgrade, new IAction[]
-                {
-                    new ModifyMembership("Modify membership."),
-                    new EmailOwner("membership upgrade")
-                }
-            },
-            {ProductType.SkiingVideo, new IAction[]
-                {
-                    new AddFreeVideo()
-                }
-            }
-        };
         [TestMethod]
         public void ProcessesPhysicalProduct()
         {
@@ -105,11 +73,9 @@ namespace Tests
             var products = (ProductType[])Enum.GetValues(typeof(ProductType));
             var order = new Order(products);
 
-            var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>();
-
             var repo = new InMemoryRepository();
 
-            var engine = new Engine(actionmap, repo);
+            var engine = new Engine(AllRules.ActionMap, repo);
 
             // Run processing
             engine.ProcessOrders(new List<Order> { order });
@@ -118,7 +84,10 @@ namespace Tests
             // Check that repository has no record due to empty action
             var actualData = repo.Get(order.OrderID);
 
-            Assert.AreEqual(null, actualData);
+            Assert.IsNotNull(actualData);
+
+            var expectedLength = 9;
+            Assert.AreEqual(expectedLength, actualData.Count());
         }
     }
 }
