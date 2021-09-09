@@ -17,7 +17,7 @@ namespace Model
 
         public ActionData Get(Guid id)
         {
-            var item = Memory.Find(data => data.OrderID == id); // TODO: Error handling
+            var item = Memory.Find(data => data.OrderID == id);
 
             return item;
         }

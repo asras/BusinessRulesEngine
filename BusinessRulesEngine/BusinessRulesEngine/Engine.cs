@@ -18,7 +18,27 @@ namespace BusinessRules
 
         public void ProcessOrders(IEnumerable<Order> orders)
         {
+            var actiondatas = new List<ActionData>();
+            foreach (var order in orders)
+            {
+                foreach (var product in order.Products)
+                {
+                    var action = ActionMap[product];
+                    if (action == null) continue; // Empty actions are allowed, perhaps for subscription payments
 
+                    var succeeded = action.Perform();
+                    var desc = action.Describe();
+
+                    var data = new ActionData(succeeded, desc, order.OrderID);
+
+                    actiondatas.Add(data);
+                }
+            }
+
+            foreach (var data in actiondatas)
+            {
+                Repository.Insert(data);
+            }
         }
     }
 }
