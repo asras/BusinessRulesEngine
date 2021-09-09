@@ -18,7 +18,7 @@ namespace Tests
             var products = new List<ProductType> { ProductType.PhysicalProduct };
             var order = new Order(products);
 
-            var action = new GeneratePackingSlip();
+            var action = new GeneratePackingSlip("Generate packing slip for shipping");
             var actionmap = new Dictionary<ProductType, IAction>() 
             {
                 { ProductType.PhysicalProduct, action }
