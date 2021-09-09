@@ -7,10 +7,10 @@ namespace BusinessRules
     public class Engine
     {
         // This class will get a list of orders, attempt to perform the associated actions, and then persist the results of the actions.
-        Dictionary<ProductType, IAction> ActionMap;
+        Dictionary<ProductType, IEnumerable<IAction>> ActionMap;
         IRepository Repository;
 
-        public Engine(Dictionary<ProductType, IAction> actionMap, IRepository repository)
+        public Engine(Dictionary<ProductType, IEnumerable<IAction>> actionMap, IRepository repository)
         {
             ActionMap = actionMap;
             Repository = repository;
@@ -23,16 +23,19 @@ namespace BusinessRules
             {
                 foreach (var product in order.Products)
                 {
-                    IAction action;
-                    var hasAction = ActionMap.TryGetValue(product, out action);
-                    if (!hasAction) continue; // Empty actions are allowed, perhaps for subscription payments
+                    IEnumerable<IAction> actions;
+                    var hasActions = ActionMap.TryGetValue(product, out actions);
+                    if (!hasActions) continue; // Empty actions are allowed, perhaps for subscription payments
 
-                    var succeeded = action.Perform();
-                    var desc = action.Describe();
+                    foreach (var action in actions)
+                    {
+                        var succeeded = action.Perform();
+                        var desc = action.Describe();
 
-                    var data = new ActionData(succeeded, desc, order.OrderID);
+                        var data = new ActionData(succeeded, desc, order.OrderID);
 
-                    actiondatas.Add(data);
+                        actiondatas.Add(data);
+                    }
                 }
             }
 

@@ -11,6 +11,14 @@ namespace Tests
     [TestClass]
     public class TestEngine
     {
+        Dictionary<ProductType, IAction> AllActions = new Dictionary<ProductType, IAction>()
+        {
+            {ProductType.PhysicalProduct, new GeneratePackingSlip("Generate packing slip for shipping.")},
+            {ProductType.Book, new GeneratePackingSlip("Generate duplicate packing slip for royalty department.")},
+            {ProductType.Membership, new ModifyMembership("Activate new membership.")},
+            {ProductType.MembershipUpgrade, new ModifyMembership("Modify membership.")},
+            {ProductType.SkiingVideo, new AddFreeVideo() }
+        };
         [TestMethod]
         public void ProcessesPhysicalProduct()
         {
@@ -19,9 +27,9 @@ namespace Tests
             var order = new Order(products);
 
             var action = new GeneratePackingSlip("Generate packing slip for shipping");
-            var actionmap = new Dictionary<ProductType, IAction>() 
+            var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>() 
             {
-                { ProductType.PhysicalProduct, action }
+                { ProductType.PhysicalProduct, new IAction[] { action } }
             };
 
             var repo = new InMemoryRepository();
@@ -50,7 +58,7 @@ namespace Tests
             var products = new List<ProductType> { ProductType.PhysicalProduct };
             var order = new Order(products);
 
-            var actionmap = new Dictionary<ProductType, IAction>();
+            var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>();
 
             var repo = new InMemoryRepository();
 
