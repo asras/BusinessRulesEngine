@@ -10,5 +10,12 @@ namespace Model
         public bool Succeeded;
         public string Description;
         public Guid OrderID;
+
+        public ActionData(bool succeeded, string desc, Guid id)
+        {
+            Succeeded = succeeded;
+            Description = desc;
+            OrderID = id;
+        }
     }
 }

@@ -7,12 +7,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests
 {
     [TestClass]
-    class TestEngine
+    public class TestEngine
     {
         [TestMethod]
         public void ProcessesPhysicalProduct()
         {
-
+            throw new NotImplementedException();
         }
     }
 }

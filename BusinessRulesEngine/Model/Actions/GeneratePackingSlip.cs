@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Model.Actions
+namespace Model
 {
     // Can we use this class to handle packing slips for both shipping and royalty?
     public class GeneratePackingSlip : IAction
