@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Model
 {
-    interface IRepository
+    public interface IRepository
     {
         void Insert(ActionData data);
 
