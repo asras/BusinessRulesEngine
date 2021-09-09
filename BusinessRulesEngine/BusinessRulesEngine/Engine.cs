@@ -21,6 +21,8 @@ namespace BusinessRules
         {
             // Could add some logging here
 
+            // Since actions will involve webcalls etc. we will probably want to run them asynchronously.
+            // Then this code would need to be updated.
             var actiondatas = orders.SelectMany(ProcessOrder);
 
             foreach (var data in actiondatas)
