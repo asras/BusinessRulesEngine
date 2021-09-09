@@ -17,5 +17,19 @@ namespace Model
             Description = desc;
             OrderID = id;
         }
+
+        public override bool Equals(object obj)
+        {
+            if ((obj == null) || !this.GetType().Equals(obj.GetType()))
+            {
+                return false;
+            }
+            else
+            {
+                ActionData other = (ActionData)obj;
+                return Succeeded == other.Succeeded && Description == other.Description && OrderID == other.OrderID;
+            }
+                  
+        }
     }
 }
