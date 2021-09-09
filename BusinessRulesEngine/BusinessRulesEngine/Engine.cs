@@ -1,6 +1,7 @@
 ﻿using System;
 using Model;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BusinessRules
 {
@@ -18,31 +19,42 @@ namespace BusinessRules
 
         public void ProcessOrders(IEnumerable<Order> orders)
         {
-            var actiondatas = new List<ActionData>();
-            foreach (var order in orders)
-            {
-                foreach (var product in order.Products)
-                {
-                    IEnumerable<IAction> actions;
-                    var hasActions = ActionMap.TryGetValue(product, out actions);
-                    if (!hasActions) continue; // Empty actions are allowed, perhaps for subscription payments
+            // Could add some logging here
 
-                    foreach (var action in actions)
-                    {
-                        var succeeded = action.Perform();
-                        var desc = action.Describe();
-
-                        var data = new ActionData(succeeded, desc, order.OrderID);
-
-                        actiondatas.Add(data);
-                    }
-                }
-            }
+            var actiondatas = orders.SelectMany(ProcessOrder);
 
             foreach (var data in actiondatas)
             {
                 Repository.Insert(data);
             }
+        }
+
+        public IEnumerable<ActionData> ProcessOrder(Order order)
+        {
+            return order.Products.SelectMany(product => ProcessProduct(product, order.OrderID));
+        }
+
+        public IEnumerable<ActionData> ProcessProduct(ProductType product, Guid id)
+        {
+            IEnumerable<IAction> actions;
+            bool hasActions = ActionMap.TryGetValue(product, out actions);
+            if (!hasActions)
+            {
+                return Enumerable.Empty<ActionData>();
+            } else
+            {
+                return actions.Select(action => RunAction(action, id));
+            }
+        }
+
+        public ActionData RunAction(IAction action, Guid id)
+        {
+            var succeeded = action.Perform();
+            var desc = action.Describe();
+
+            var data = new ActionData(succeeded, desc, id);
+
+            return data;
         }
     }
 }
