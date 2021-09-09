@@ -4,20 +4,44 @@ using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model;
 using BusinessRules;
-
+using System.Linq;
 
 namespace Tests
 {
     [TestClass]
     public class TestEngine
     {
-        Dictionary<ProductType, IAction> AllActions = new Dictionary<ProductType, IAction>()
+        Dictionary<ProductType, IEnumerable<IAction>> AllActions = new Dictionary<ProductType, IEnumerable<IAction>>()
         {
-            {ProductType.PhysicalProduct, new GeneratePackingSlip("Generate packing slip for shipping.")},
-            {ProductType.Book, new GeneratePackingSlip("Generate duplicate packing slip for royalty department.")},
-            {ProductType.Membership, new ModifyMembership("Activate new membership.")},
-            {ProductType.MembershipUpgrade, new ModifyMembership("Modify membership.")},
-            {ProductType.SkiingVideo, new AddFreeVideo() }
+            {ProductType.PhysicalProduct, new IAction[]
+                {
+                    new GeneratePackingSlip("Generate packing slip for shipping."),
+                    new GenerateCommission()
+                }
+            },
+            {ProductType.Book, new IAction[]
+                {
+                    new GeneratePackingSlip("Generate duplicate packing slip for royalty department."),
+                    new GenerateCommission()
+                }
+            },
+            {ProductType.Membership, new IAction[]
+                {
+                    new ModifyMembership("Activate new membership."),
+                    new EmailOwner("membership activation")
+                }
+            },
+            {ProductType.MembershipUpgrade, new IAction[]
+                {
+                    new ModifyMembership("Modify membership."),
+                    new EmailOwner("membership upgrade")
+                }
+            },
+            {ProductType.SkiingVideo, new IAction[]
+                {
+                    new AddFreeVideo()
+                }
+            }
         };
         [TestMethod]
         public void ProcessesPhysicalProduct()
@@ -27,7 +51,7 @@ namespace Tests
             var order = new Order(products);
 
             var action = new GeneratePackingSlip("Generate packing slip for shipping");
-            var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>() 
+            var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>()
             {
                 { ProductType.PhysicalProduct, new IAction[] { action } }
             };
@@ -46,9 +70,10 @@ namespace Tests
             var expectedOrderID = order.OrderID;
             var expectedData = new ActionData(expectedSuccess, expectedActionDescription, expectedOrderID);
 
-            var actualData = repo.Get(order.OrderID);
+            var actualDatas = repo.Get(order.OrderID);
 
-            Assert.AreEqual(expectedData, actualData);
+
+            Assert.AreEqual(expectedData, actualDatas.FirstOrDefault());
         }
 
         [TestMethod]
@@ -56,6 +81,28 @@ namespace Tests
         {
             // Set up data
             var products = new List<ProductType> { ProductType.PhysicalProduct };
+            var order = new Order(products);
+
+            var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>();
+
+            var repo = new InMemoryRepository();
+
+            var engine = new Engine(actionmap, repo);
+
+            // Run processing
+            engine.ProcessOrders(new List<Order> { order });
+
+
+            // Check that repository has no record due to empty action
+            var actualData = repo.Get(order.OrderID);
+
+            Assert.AreEqual(null, actualData.FirstOrDefault());
+        }
+
+        [TestMethod]
+        public void OrderWithAllProducts()
+        {
+            var products = (ProductType[])Enum.GetValues(typeof(ProductType));
             var order = new Order(products);
 
             var actionmap = new Dictionary<ProductType, IEnumerable<IAction>>();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Model;
@@ -22,7 +23,7 @@ namespace Tests
 
             repo.Insert(actiondata);
 
-            var retrieved = repo.Get(id);
+            var retrieved = repo.Get(id).FirstOrDefault();
 
             Assert.AreEqual(actiondata, retrieved);
         }
@@ -32,7 +33,7 @@ namespace Tests
         {
             var repo = new InMemoryRepository();
 
-            var retrieved = repo.Get(Guid.NewGuid());
+            var retrieved = repo.Get(Guid.NewGuid()).FirstOrDefault();
 
             Assert.IsNull(retrieved);
         }

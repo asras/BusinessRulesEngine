@@ -15,11 +15,11 @@ namespace Model
             Memory.Add(clonedData);
         }
 
-        public ActionData Get(Guid id)
+        public IEnumerable<ActionData> Get(Guid id)
         {
-            var item = Memory.Find(data => data.OrderID == id);
+            var items = Memory.FindAll(data => data.OrderID == id);
 
-            return item;
+            return items;
         }
     }
 }

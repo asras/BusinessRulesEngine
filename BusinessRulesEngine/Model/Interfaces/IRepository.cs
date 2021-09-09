@@ -8,6 +8,6 @@ namespace Model
     {
         void Insert(ActionData data);
 
-        ActionData Get(Guid id);
+        IEnumerable<ActionData> Get(Guid orderid);
     }
 }
