@@ -6,7 +6,13 @@ namespace Model
 {
     public class Order
     {
-        IEnumerable<ProductType> Products;
-        Guid OrderID;
+        public IEnumerable<ProductType> Products;
+        public Guid OrderID;
+
+        public Order(IEnumerable<ProductType> products)
+        {
+            Products = products;
+            OrderID = System.Guid.NewGuid();
+        }
     }
 }
