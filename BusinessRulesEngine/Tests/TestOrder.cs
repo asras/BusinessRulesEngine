@@ -8,7 +8,7 @@ namespace Tests
     public class TestOrder
     {
         [TestMethod]
-        public void TestInstantiation()
+        public void InstantiatesCorrectly()
         {
             var order = new Order(new List<ProductType>());
         }

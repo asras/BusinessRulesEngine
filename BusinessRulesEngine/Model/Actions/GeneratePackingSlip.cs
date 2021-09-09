@@ -8,7 +8,7 @@ namespace Model.Actions
     public class GeneratePackingSlip : IAction
     {
         readonly string description = "Generate a packing slip for shipping.";
-        bool Perform()
+        public bool Perform()
         {
             // Call external service at warehouse to generate packing slip
             // ...
@@ -16,7 +16,7 @@ namespace Model.Actions
             return true;
         }
 
-        string Describe()
+        public string Describe()
         {
             return description;
         }

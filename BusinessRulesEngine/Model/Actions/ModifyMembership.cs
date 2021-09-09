@@ -6,6 +6,21 @@ namespace Model.Actions
 {
     public class ModifyMembership : IAction
     {
-        readonly string description = "";
+        readonly string description;
+
+        public ModifyMembership(string description)
+        {
+            this.description = description;
+        }
+
+        public bool Perform()
+        {
+            return true;
+        }
+
+        public string Describe()
+        {
+            return description;
+        }
     }
 }
