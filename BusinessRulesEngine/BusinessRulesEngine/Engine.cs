@@ -23,8 +23,9 @@ namespace BusinessRules
             {
                 foreach (var product in order.Products)
                 {
-                    var action = ActionMap[product];
-                    if (action == null) continue; // Empty actions are allowed, perhaps for subscription payments
+                    IAction action;
+                    var hasAction = ActionMap.TryGetValue(product, out action);
+                    if (!hasAction) continue; // Empty actions are allowed, perhaps for subscription payments
 
                     var succeeded = action.Perform();
                     var desc = action.Describe();

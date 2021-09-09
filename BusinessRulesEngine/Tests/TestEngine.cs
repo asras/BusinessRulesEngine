@@ -42,5 +42,28 @@ namespace Tests
 
             Assert.AreEqual(expectedData, actualData);
         }
+
+        [TestMethod]
+        public void EmptyActionIsAllowed()
+        {
+            // Set up data
+            var products = new List<ProductType> { ProductType.PhysicalProduct };
+            var order = new Order(products);
+
+            var actionmap = new Dictionary<ProductType, IAction>();
+
+            var repo = new InMemoryRepository();
+
+            var engine = new Engine(actionmap, repo);
+
+            // Run processing
+            engine.ProcessOrders(new List<Order> { order });
+
+
+            // Check that repository has no record due to empty action
+            var actualData = repo.Get(order.OrderID);
+
+            Assert.AreEqual(null, actualData);
+        }
     }
 }
